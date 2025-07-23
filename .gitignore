@@ -1,0 +1,6 @@
+.vscode/
+dados/
+Faturas/
+pyspark/
+artifacts/
+__pycache__/
