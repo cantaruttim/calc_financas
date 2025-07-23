@@ -29,29 +29,25 @@ df = ler_arquivo_excel(file_path, sheet)
 
 def tratar_arquivo(df):
     if df is not None:
-        ## converte a coluna vigência para date_time
         df['Vigência'] = pd.to_datetime(df['Vigência'], errors='coerce').dt.strftime('%m-%Y')
 
-        ## fazemos o agrupamento e depois somamos os valores
         grouped = df.groupby(['Cartão', 'Vigência']).sum(numeric_only=True).reset_index()
         
-        ## pivotamos a tabela agrupada pelo cartão e criamos as colunas de vigência
         tabela_pivot = grouped.pivot(index='Cartão', columns='Vigência')
         tabela_pivot = tabela_pivot.fillna(0)
         return df, tabela_pivot
 
 df, tabela = tratar_arquivo(df)
-
-# Convertendo as chaves de descontos para datetime para fácil comparação
 descontos_dt = {datetime.strptime(k, '%m-%Y'): v for k, v in descontos.items()}
 
 def proximo_desconto(mes_atual, descontos_dict):
     """Retorna o valor do menor desconto cuja data seja >= mes_atual"""
     candidatos = [d for d in descontos_dict if d >= mes_atual]
     if not candidatos:
-        return 0  # Nenhum desconto aplicável
+        return 0  
     desconto_data = min(candidatos)
     return descontos_dict[desconto_data]
+
 
 def gastos_cartao(df):
     meses = list(df.columns.get_level_values(1).unique())
@@ -90,23 +86,16 @@ def gastos_cartao(df):
           
 
 def tras_dono_cartao(tabela):
-    # Copia os dados
     df2 = tabela.copy()
 
-    # Remove a coluna 'Vigência' se existir
     if 'Vigência' in df2.columns:
         df2 = df2.drop(columns='Vigência')
 
-    # Se df2 tem MultiIndex nas colunas, achatamos:
     if isinstance(df2.columns, pd.MultiIndex):
         df2.columns = ['_'.join(col).strip() if isinstance(col, tuple) else col for col in df2.columns]
 
-    # Resetamos o índice, por segurança
     df2.reset_index(inplace=True)
-
-    # Garante que df tenha 'Cartão' e 'Dono'
     donos = df[['Cartão', 'Dono']].drop_duplicates()
-
     df2 = df2.merge(donos, on='Cartão', how='left')
     return df2
 
@@ -114,10 +103,8 @@ def tras_dono_cartao(tabela):
 
 def reordena_colunas(df):
     cols = df.columns.tolist()
-    # Garante que 'Dono' e 'Cartão' estejam no início
     new_order = [col for col in ['Dono', 'Cartão'] if col in cols] + [col for col in cols if col not in ['Dono', 'Cartão']]
     df = df[new_order]
-
     return df
 
 df = reordena_colunas(tras_dono_cartao(tabela))
