@@ -19,6 +19,7 @@ def ler_arquivo_csv(taxa):
         selic média (dados diários)
     """
     taxa = pd.read_csv(taxa, sep=";")
+    taxa["Taxa média"] = taxa["Taxa média"].astype(str).str.replace(",", ".", regex=False)
     taxa = taxa[["Data", "Taxa média"]]
     return taxa
 taxa = ler_arquivo_csv(taxa_selic)
@@ -29,6 +30,12 @@ def formatar_data_taxa(taxa):
     taxa["Mes"] = taxa["Data"].dt.month
     return taxa
 formatar_data_taxa(taxa)
+
+def calcular_taxa_media(taxa):
+    taxa["Taxa média"] = pd.to_numeric(taxa["Taxa média"], errors='coerce', downcast='float')
+    taxa = taxa.groupby('Ano')['Taxa média'].mean().reset_index()
+    return taxa
+taxa = calcular_taxa_media(taxa)
 print(taxa)
 
 def ler_arquivo_excel(file_path, sheet):
