@@ -1,5 +1,10 @@
 import pandas as pd
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+valor = os.getenv("VALOR")
 
 caminho = "./dados"
 gastos = f"{caminho}/Controle de Gastos.xlsx"
