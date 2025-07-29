@@ -1,6 +1,11 @@
 import pandas as pd
 from datetime import datetime
-import dotenv
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+valor = os.getenv("valor")
 
 caminho = "./dados"
 gastos = f"{caminho}/Controle de Gastos.xlsx"
@@ -37,7 +42,6 @@ def calcular_taxa_media(taxa):
     taxa = taxa.groupby('Ano')['Taxa média'].mean().reset_index()
     return taxa
 taxa = calcular_taxa_media(taxa)
-print(taxa)
 
 def ler_arquivo_excel(file_path, sheet):
     try:
