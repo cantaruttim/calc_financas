@@ -1,8 +1,10 @@
 import pandas as pd
 from datetime import datetime
 
-file_path = "./dados/Controle de Gastos.xlsx"
+caminho = "./dados"
+gastos = f"{caminho}/Controle de Gastos.xlsx"
 sheet = "Gastos_2025"
+taxa_selic = f"{caminho}/taxa_selic_apurada.csv"
 
 descontos = {
     '10-2025': 870,
@@ -10,6 +12,24 @@ descontos = {
     '02-2026': 350,
     '05-2026': 1695
 }
+
+def ler_arquivo_csv(taxa):
+    """
+        Função responsável por trazer o valor da taxa
+        selic média (dados diários)
+    """
+    taxa = pd.read_csv(taxa, sep=";")
+    taxa = taxa[["Data", "Taxa média"]]
+    return taxa
+taxa = ler_arquivo_csv(taxa_selic)
+
+def formatar_data_taxa(taxa):
+    taxa["Data"] = pd.to_datetime(taxa["Data"], errors='coerce')
+    taxa["Ano"] = taxa["Data"].dt.year
+    taxa["Mes"] = taxa["Data"].dt.month
+    return taxa
+formatar_data_taxa(taxa)
+print(taxa)
 
 def ler_arquivo_excel(file_path, sheet):
     try:
@@ -25,7 +45,7 @@ def ler_arquivo_excel(file_path, sheet):
     except Exception as e:
         print(f"Ocorreu um erro: {e}")
     return df
-df = ler_arquivo_excel(file_path, sheet)
+df = ler_arquivo_excel(gastos, sheet)
 
 def tratar_arquivo(df):
     if df is not None:
@@ -121,5 +141,5 @@ def reordena_colunas(df):
     return df
 
 df = reordena_colunas(tras_dono_cartao(tabela))
-print(df)
-gastos_cartao(tabela)
+#print(df)
+#gastos_cartao(tabela)
