@@ -153,5 +153,5 @@ def reordena_colunas(df):
     return df
 
 df = reordena_colunas(tras_dono_cartao(tabela))
-#print(df)
-#gastos_cartao(tabela)
+print(df)
+gastos_cartao(tabela)
