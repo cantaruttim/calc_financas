@@ -103,9 +103,13 @@ def aplicar_descontos(df3, descontos):
     df3['Valor com desconto'] = df3['Valor'] - df3['Descontos acumulados']
     return df3
 
-df3 = aplicar_descontos(df3, descontos)
-df3 = df3.fillna(0)
-print(df3)
+df3 = comparativo_gastos(aplicar_descontos(df3, descontos))
+    
+
+def preencher_valores_faltantes(df3):
+    df3 = df3.fillna(0)
+    return df3
+
 
 def tratar_arquivo(df):
     if df is not None:
@@ -154,4 +158,5 @@ def reordena_colunas(df2):
 
     return df2
 
-# df2 = reordena_colunas(tras_dono_cartao(tabela))
+df3 = preencher_valores_faltantes(df3)
+print(df3)
