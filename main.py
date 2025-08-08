@@ -89,6 +89,22 @@ def comparativo_gastos(df):
             )
     return df3
 df3 = comparativo_gastos(df)
+
+def aplicar_descontos(df3, descontos):
+    descontos_fmt = {k if '-' in k and len(k) == 7 else datetime.strptime(k, '%m-%Y').strftime('%Y-%m'): v for k, v in descontos.items()}
+
+    descontos_acumulados = []
+    for mes in df3['Vigência']:
+        desconto_total = sum(
+            v for k, v in descontos_fmt.items() if k <= mes
+        )
+        descontos_acumulados.append(desconto_total)
+    df3['Descontos acumulados'] = descontos_acumulados
+    df3['Valor com desconto'] = df3['Valor'] - df3['Descontos acumulados']
+    return df3
+
+df3 = aplicar_descontos(df3, descontos)
+df3 = df3.fillna(0)
 print(df3)
 
 def tratar_arquivo(df):
