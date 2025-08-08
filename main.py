@@ -13,9 +13,9 @@ taxa_selic = f"{caminho}/taxa_selic_apurada.csv"
 
 descontos = {
     '10-2025': 870,
-    '12-2025': 1100,
+    '12-2025': 1250,
     '02-2026': 350,
-    '05-2026': 1695
+    '05-2026': 1695,
 }
 
 def ler_arquivo_csv(taxa):
@@ -41,7 +41,6 @@ def calcular_taxa_media(taxa):
     taxa = taxa.groupby('Ano')['Taxa média'].mean().reset_index()
     return taxa
 taxa = calcular_taxa_media(taxa)
-print(taxa)
 
 def ler_arquivo_excel(file_path, sheet):
     try:
@@ -59,6 +58,39 @@ def ler_arquivo_excel(file_path, sheet):
     return df
 df = ler_arquivo_excel(gastos, sheet)
 
+def gastos_totais(df):
+    df['Vigência'] = pd.to_datetime(df['Vigência'], errors='coerce').dt.strftime('%Y-%m')
+    df = df.groupby('Vigência')['Valor'].sum().reset_index()
+    return df
+df = gastos_totais(df)
+
+def comparativo_gastos(df):
+    df3 = df.copy()
+    df3 = df3.sort_values('Vigência').reset_index(drop=True)
+
+    df3['Diferença'] = df3['Valor'].diff()
+    df3['Percentual'] = df3['Valor'].pct_change() * 100
+
+    for i, row in df3.iterrows():
+        mes = row['Vigência']
+        valor = row['Valor']
+        if i == 0:
+            print(f"No mês {mes}, o gasto foi de R$ {valor:.2f}.")
+        else:
+            diff = row['Diferença']
+            perc = row['Percentual']
+            status = "aumento" if diff > 0 else "queda" if diff < 0 else "estável"
+            print(
+                f"""No mês {mes}, 
+                    o gasto foi de R$ {valor:.2f} 
+                    ({status} de R$ {diff:.2f}, {perc:.2f}% 
+                    em relação ao mês anterior).
+                """
+            )
+    return df3
+df3 = comparativo_gastos(df)
+print(df3)
+
 def tratar_arquivo(df):
     if df is not None:
         ## converte a coluna vigência para date_time
@@ -72,86 +104,38 @@ def tratar_arquivo(df):
         tabela_pivot = tabela_pivot.fillna(0)
         return df, tabela_pivot
 
-df, tabela = tratar_arquivo(df)
-
-# Convertendo as chaves de descontos para datetime para fácil comparação
-descontos_dt = {datetime.strptime(k, '%m-%Y'): v for k, v in descontos.items()}
-
-def proximo_desconto(mes_atual, descontos_dict):
-    """Retorna o valor do menor desconto cuja data seja >= mes_atual"""
-    candidatos = [d for d in descontos_dict if d >= mes_atual]
-    if not candidatos:
-        return 0  # Nenhum desconto aplicável
-    desconto_data = min(candidatos)
-    return descontos_dict[desconto_data]
-
-def gastos_cartao(df):
-    meses = list(df.columns.get_level_values(1).unique())
-
-    for i in range(len(meses)):
-        nome_mes = meses[i]
-        dt_mes = datetime.strptime(nome_mes, '%m-%Y')
-
-        valor_mes = df.xs(nome_mes, level=1, axis=1).sum().sum()
-        desconto = proximo_desconto(dt_mes, descontos_dt)
-        valor_com_desconto = valor_mes - desconto
-
-        if i == 0:
-            print(
-                f'''
-                Os gastos do mês {nome_mes} no cartão
-                    foi de R$ {round(valor_com_desconto, 2)}
-                '''
-            )
-        else:
-            nome_mes_anterior = meses[i - 1]
-            dt_anterior = datetime.strptime(nome_mes_anterior, '%m-%Y')
-            valor_anterior = df.xs(nome_mes_anterior, level=1, axis=1).sum().sum()
-            desconto_anterior = proximo_desconto(dt_anterior, descontos_dt)
-            valor_anterior_com_desconto = valor_anterior - desconto_anterior
-
-            perc_gastos = ((valor_com_desconto - valor_anterior_com_desconto) / valor_anterior_com_desconto * 100) if valor_anterior_com_desconto != 0 else 0
-
-            print(
-                f'''
-                Os gastos do mês {nome_mes} no cartão
-                    foi de R$ {round(valor_com_desconto, 2)} com um percentual de
-                    {round(perc_gastos, 2)}% em relação ao mês anterior.
-                '''
-            )
-          
+df  = ler_arquivo_excel(gastos, sheet)
+df2, tabela = tratar_arquivo(df)
 
 def tras_dono_cartao(tabela):
     # Copia os dados
-    df2 = tabela.copy()
+    df22 = tabela.copy()
 
     # Remove a coluna 'Vigência' se existir
-    if 'Vigência' in df2.columns:
-        df2 = df2.drop(columns='Vigência')
+    if 'Vigência' in df22.columns:
+        df22 = df22.drop(columns='Vigência')
 
-    # Se df2 tem MultiIndex nas colunas, achatamos:
-    if isinstance(df2.columns, pd.MultiIndex):
-        df2.columns = ['_'.join(col).strip() if isinstance(col, tuple) else col for col in df2.columns]
+    # Se df22 tem MultiIndex nas colunas, achatamos:
+    if isinstance(df22.columns, pd.MultiIndex):
+        df22.columns = ['_'.join(col).strip() if isinstance(col, tuple) else col for col in df22.columns]
 
     # Resetamos o índice, por segurança
-    df2.reset_index(inplace=True)
+    df22.reset_index(inplace=True)
 
-    # Garante que df tenha 'Cartão' e 'Dono'
-    donos = df[['Cartão', 'Dono']].drop_duplicates()
+    # Garante que df2 tenha 'Cartão' e 'Dono'
+    donos = df2[['Cartão', 'Dono']].drop_duplicates()
 
-    df2 = df2.merge(donos, on='Cartão', how='left')
-    return df2
+    df22 = df22.merge(donos, on='Cartão', how='left')
+    return df22
 
 
 
-def reordena_colunas(df):
-    cols = df.columns.tolist()
+def reordena_colunas(df2):
+    cols = df2.columns.tolist()
     # Garante que 'Dono' e 'Cartão' estejam no início
     new_order = [col for col in ['Dono', 'Cartão'] if col in cols] + [col for col in cols if col not in ['Dono', 'Cartão']]
-    df = df[new_order]
+    df2 = df2[new_order]
 
-    return df
+    return df2
 
-df = reordena_colunas(tras_dono_cartao(tabela))
-print(df)
-gastos_cartao(tabela)
+# df2 = reordena_colunas(tras_dono_cartao(tabela))
