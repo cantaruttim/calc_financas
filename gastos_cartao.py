@@ -103,7 +103,7 @@ def aplicar_descontos(df3, descontos):
     df3['Valor com desconto'] = df3['Valor'] - df3['Descontos acumulados']
     return df3
 
-df3 = comparativo_gastos(aplicar_descontos(df3, descontos))
+df3 = aplicar_descontos(df3, descontos)
     
 
 def preencher_valores_faltantes(df3):
@@ -144,7 +144,6 @@ def tras_dono_cartao(tabela):
 
     # Garante que df2 tenha 'Cartão' e 'Dono'
     donos = df2[['Cartão', 'Dono']].drop_duplicates()
-
     df22 = df22.merge(donos, on='Cartão', how='left')
     return df22
 
