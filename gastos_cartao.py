@@ -134,7 +134,6 @@ def tras_dono_cartao(tabela):
     # Remove a coluna 'Vigência' se existir
     if 'Vigência' in df22.columns:
         df22 = df22.drop(columns='Vigência')
-
     # Se df22 tem MultiIndex nas colunas, achatamos:
     if isinstance(df22.columns, pd.MultiIndex):
         df22.columns = ['_'.join(col).strip() if isinstance(col, tuple) else col for col in df22.columns]
