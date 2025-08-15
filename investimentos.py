@@ -89,6 +89,15 @@ df["Taxa_media"] = (
 )
 
 df['vl_invest_acum'] = df['Valor'].cumsum()
-df["Ganho"] = df["vl_invest_acum"] * (df["Taxa_media"] / 100)
 
-print(df)
+
+df2 = df[['Data']]
+df2 = df2.sort_values('Data').reset_index(drop=True)
+
+df2['Dias_para_proximo'] = (
+    df2['Data'].shift(-1) - df2['Data']
+)
+df2['Dias_para_proximo'] = df2['Dias_para_proximo'].dt.days 
+data_final = df2['Data'].max()
+
+print(df2)
