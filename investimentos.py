@@ -32,13 +32,13 @@ print()
 
 ## Dados da Selic - Bacen
 selic = ler_taxa_selic(taxa_selic)
-print(selic)
 
 def trata_data(df, col):
     df[col] = pd.to_datetime(df[col], format= "%Y-%m-%d", errors='coerce')
     df["ano"] = df[col].dt.year
     df["mes"] = df[col].dt.month
     df["ANOMES"] = df["ano"].astype(str) + df["mes"].astype(str).str.zfill(2)
+    df = df.drop(columns=["ano", "mes"])
 
     return df
 
@@ -75,7 +75,7 @@ selic2 = selic[["Taxa_media", "ANOMES"]]
 def add_taxa(df, selic):
     df = (
         pd.merge(
-            df, selic2, 
+            df, selic, 
             on='ANOMES', 
             how='left'
         )
@@ -84,5 +84,11 @@ def add_taxa(df, selic):
     return df
 
 df = add_taxa(df, selic[["ANOMES", "Taxa_media"]])
-print(df)
+df["Taxa_media"] = (
+    ((1 + df["Taxa_media"] ** (1/12)) - 1)
+)
 
+df['vl_invest_acum'] = df['Valor'].cumsum()
+df["Ganho"] = df["vl_invest_acum"] * (df["Taxa_media"] / 100)
+
+print(df)
