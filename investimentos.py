@@ -36,11 +36,13 @@ print(selic)
 
 def trata_data(df, col):
     df[col] = pd.to_datetime(df[col], format= "%Y-%m-%d", errors='coerce')
+    df["ano"] = df[col].dt.year
+    df["mes"] = df[col].dt.month
+    df["ANOMES"] = df["ano"].astype(str) + df["mes"].astype(str).str.zfill(2)
+
     return df
 
 def trata_valores(df, column_list: list):
-
-    # Remover espaços extras dos nomes das colunas
     df.columns = df.columns.str.strip()
 
     # Verificar colunas ausentes
@@ -48,7 +50,6 @@ def trata_valores(df, column_list: list):
         if col not in df.columns:
             raise KeyError(f"Coluna '{col}' não encontrada no DataFrame.")
 
-    # Normalizar números
     df[column_list] = df[column_list].apply(
         lambda col: col.astype(str).str.replace(",", ".", regex=False).astype(float)
     )
@@ -56,6 +57,8 @@ def trata_valores(df, column_list: list):
     return df
 
 selic = trata_data(selic, "Data")
+df = trata_data(df, "Data")
+
 selic = trata_valores(
           selic,
           column_list=[
@@ -67,10 +70,15 @@ selic = trata_valores(
             "Curtose"]
         )
 
-print(selic)
+selic2 = selic[["Taxa_media", "ANOMES"]]
 
+df = (
+    pd.merge(
+        df, selic2, 
+        on='ANOMES', 
+        how='left'
+    )
+)
 
-selic2 = selic[["Data", "Taxa_media"]]
-df = pd.merge(df, selic2, on='Data', how='left')
 print(df)
 
