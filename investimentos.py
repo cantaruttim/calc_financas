@@ -72,13 +72,17 @@ selic = trata_valores(
 
 selic2 = selic[["Taxa_media", "ANOMES"]]
 
-df = (
-    pd.merge(
-        df, selic2, 
-        on='ANOMES', 
-        how='left'
+def add_taxa(df, selic):
+    df = (
+        pd.merge(
+            df, selic2, 
+            on='ANOMES', 
+            how='left'
+        )
     )
-)
+    df = df.fillna(df["Taxa_media"].mean())
+    return df
 
+df = add_taxa(df, selic[["ANOMES", "Taxa_media"]])
 print(df)
 
