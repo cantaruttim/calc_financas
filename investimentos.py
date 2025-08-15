@@ -26,16 +26,16 @@ def ler_taxa_selic(path_file):
 ## Dados de investimentos
 df = ler_investimentos(path_file, sheet)
 df["acumulado_investido"] = df["Valor"].sum()
-print(df.head(10))
+# print(df.info())
 
 print()
 
 ## Dados da Selic - Bacen
 selic = ler_taxa_selic(taxa_selic)
-
+print(selic)
 
 def trata_data(df, col):
-    df[col] = pd.to_datetime(df[col], errors='coerce')
+    df[col] = pd.to_datetime(df[col], format= "%d/%m/%Y", errors='coerce')
     return df
 
 def trata_valores(df, column_list: list):
@@ -69,4 +69,9 @@ selic = (
         "Curtose"])
 )
 
-print(selic)
+
+
+# selic2 = selic
+# df = pd.merge(df, selic2, on='Data', how='left')
+# print(df)
+
