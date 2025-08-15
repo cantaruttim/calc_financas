@@ -19,7 +19,7 @@ def ler_investimentos(path_file, sheet):
 def ler_taxa_selic(path_file):
     selic = pd.read_csv(
         taxa_selic, 
-        sep=","
+        sep=";"
     )
     return selic    
 
@@ -35,7 +35,7 @@ selic = ler_taxa_selic(taxa_selic)
 print(selic)
 
 def trata_data(df, col):
-    df[col] = pd.to_datetime(df[col], format= "%d/%m/%Y", errors='coerce')
+    df[col] = pd.to_datetime(df[col], format= "%Y-%m-%d", errors='coerce')
     return df
 
 def trata_valores(df, column_list: list):
@@ -55,23 +55,22 @@ def trata_valores(df, column_list: list):
 
     return df
 
-selic = (
-    trata_valores(
-        trata_data(
-            selic, 'Data'
-        ), 
-    column_list=[
-        "Taxa_aa", 
-        "Taxa_media", 
-        "Taxa_mediana", 
-        "Taxa_modal", 
-        "Desvio_Padrao", 
-        "Curtose"])
-)
+selic = trata_data(selic, "Data")
+selic = trata_valores(
+          selic,
+          column_list=[
+            "Taxa_aa", 
+            "Taxa_media", 
+            "Taxa_mediana", 
+            "Taxa_modal", 
+            "Desvio_Padrao", 
+            "Curtose"]
+        )
+
+print(selic)
 
 
-
-# selic2 = selic
-# df = pd.merge(df, selic2, on='Data', how='left')
-# print(df)
+selic2 = selic[["Data", "Taxa_media"]]
+df = pd.merge(df, selic2, on='Data', how='left')
+print(df)
 
