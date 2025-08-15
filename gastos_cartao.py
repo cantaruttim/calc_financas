@@ -9,7 +9,6 @@ valor = os.getenv("VALOR")
 caminho = "./dados"
 gastos = f"{caminho}/Controle de Gastos.xlsx"
 sheet = "Gastos_2025"
-taxa_selic = f"{caminho}/taxa_selic_apurada.csv"
 
 descontos = {
     '10-2025': 870,
@@ -17,30 +16,6 @@ descontos = {
     '02-2026': 350,
     '05-2026': 1695,
 }
-
-def ler_arquivo_csv(taxa):
-    """
-        Função responsável por trazer o valor da taxa
-        selic média (dados diários)
-    """
-    taxa = pd.read_csv(taxa, sep=";")
-    taxa["Taxa média"] = taxa["Taxa média"].astype(str).str.replace(",", ".", regex=False)
-    taxa = taxa[["Data", "Taxa média"]]
-    return taxa
-taxa = ler_arquivo_csv(taxa_selic)
-
-def formatar_data_taxa(taxa):
-    taxa["Data"] = pd.to_datetime(taxa["Data"], errors='coerce')
-    taxa["Ano"] = taxa["Data"].dt.year
-    taxa["Mes"] = taxa["Data"].dt.month
-    return taxa
-formatar_data_taxa(taxa)
-
-def calcular_taxa_media(taxa):
-    taxa["Taxa média"] = pd.to_numeric(taxa["Taxa média"], errors='coerce', downcast='float')
-    taxa = taxa.groupby('Ano')['Taxa média'].mean().reset_index()
-    return taxa
-taxa = calcular_taxa_media(taxa)
 
 def ler_arquivo_excel(file_path, sheet):
     try:
