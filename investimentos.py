@@ -19,7 +19,7 @@ def ler_investimentos(path_file, sheet):
 def ler_taxa_selic(path_file):
     selic = pd.read_csv(
         taxa_selic, 
-        sep=";"
+        sep=","
     )
     return selic    
 
@@ -33,19 +33,40 @@ print()
 ## Dados da Selic - Bacen
 selic = ler_taxa_selic(taxa_selic)
 
-def tratamentos_iniciais(df, columns):
 
-    # Remove espaços extras nos nomes das colunas
+def trata_data(df, col):
+    df[col] = pd.to_datetime(df[col], errors='coerce')
+    return df
+
+def trata_valores(df, column_list: list):
+
+    # Remover espaços extras dos nomes das colunas
     df.columns = df.columns.str.strip()
 
-    df['Data'] = pd.to_datetime(df['Data'], format='%d/%m/%Y', errors='coerce')
-    
+    # Verificar colunas ausentes
+    for col in column_list:
+        if col not in df.columns:
+            raise KeyError(f"Coluna '{col}' não encontrada no DataFrame.")
 
-    cols = ["Taxa_aa", "Taxa_media", "Taxa_mediana", "Taxa_modal"]
-    for col in cols:
-        df[col] = df[col].str.replace(",", ".", regex=False).astype(float)
+    # Normalizar números
+    df[column_list] = df[column_list].apply(
+        lambda col: col.astype(str).str.replace(",", ".", regex=False).astype(float)
+    )
 
     return df
 
-selic = tratamentos_iniciais(selic)
+selic = (
+    trata_valores(
+        trata_data(
+            selic, 'Data'
+        ), 
+    column_list=[
+        "Taxa_aa", 
+        "Taxa_media", 
+        "Taxa_mediana", 
+        "Taxa_modal", 
+        "Desvio_Padrao", 
+        "Curtose"])
+)
+
 print(selic)
