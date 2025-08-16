@@ -87,8 +87,8 @@ def add_taxa(df, selic):
 def calcula_juros(df):
     ## Taxa media mensal
     df = add_taxa(df, selic[["ANOMES", "Taxa_media"]])
-    df["Taxa_media"] = (
-        ((1 + df["Taxa_media"] ** (1/12)) - 1)
+    df["Taxa_media_mensal"] = (
+        (((1 + (df["Taxa"] +  df["fixo"])) ** (1/12)) - 1)
     )
 
     df['vl_invest_acum'] = df['Valor'].cumsum()
@@ -107,7 +107,7 @@ def calcula_juros(df):
         pd.merge(
             df2, df[
                 ['Data', 
-                 'Taxa_media',
+                 'Taxa_media_mensal',
                  'Valor',
                  'vl_invest_acum'
                 ]
@@ -120,4 +120,9 @@ def calcula_juros(df):
     return df2
 
 df2 = calcula_juros(df)
+
+## confirmar corretamente o calculo
+df2["taxa_total_periodo"] = df2["Taxa_media_mensal"] * df2["Dias_para_proximo"]
+df2["vl_invest_acum2"] = df2["vl_invest_acum"] * (df2["taxa_total_periodo"])
 print(df2)
+
