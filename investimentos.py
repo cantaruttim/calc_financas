@@ -83,21 +83,40 @@ def add_taxa(df, selic):
     df = df.fillna(df["Taxa_media"].mean())
     return df
 
-df = add_taxa(df, selic[["ANOMES", "Taxa_media"]])
-df["Taxa_media"] = (
-    ((1 + df["Taxa_media"] ** (1/12)) - 1)
-)
 
-df['vl_invest_acum'] = df['Valor'].cumsum()
+def calcula_juros(df):
+    ## Taxa media mensal
+    df = add_taxa(df, selic[["ANOMES", "Taxa_media"]])
+    df["Taxa_media"] = (
+        ((1 + df["Taxa_media"] ** (1/12)) - 1)
+    )
+
+    df['vl_invest_acum'] = df['Valor'].cumsum()
 
 
-df2 = df[['Data']]
-df2 = df2.sort_values('Data').reset_index(drop=True)
+    df2 = df[['Data']]
+    df2 = df2.sort_values('Data').reset_index(drop=True)
 
-df2['Dias_para_proximo'] = (
-    df2['Data'].shift(-1) - df2['Data']
-)
-df2['Dias_para_proximo'] = df2['Dias_para_proximo'].dt.days 
-data_final = df2['Data'].max()
+    df2['Dias_para_proximo'] = (
+        df2['Data'].shift(-1) - df2['Data']
+    )
+    df2['Dias_para_proximo'] = df2['Dias_para_proximo'].dt.days 
+    data_final = df2['Data'].max()
 
+    df2 = (
+        pd.merge(
+            df2, df[
+                ['Data', 
+                 'Taxa_media',
+                 'Valor',
+                 'vl_invest_acum'
+                ]
+            ], 
+            on='Data', 
+            how='left'
+        )
+    )
+    return df2
+
+df2 = calcula_juros(df)
 print(df2)
