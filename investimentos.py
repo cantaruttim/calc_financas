@@ -116,6 +116,7 @@ def calcula_juros(df):
             how='left'
         )
     )
+
     return df2
 
 df2 = calcula_juros(df)
