@@ -123,6 +123,6 @@ df2 = calcula_juros(df)
 
 ## confirmar corretamente o calculo
 df2["taxa_total_periodo"] = df2["Taxa_media_mensal"] * df2["Dias_para_proximo"]
-df2["vl_invest_acum2"] = df2["vl_invest_acum"] * (df2["taxa_total_periodo"])
+df2["juros"] = df2["vl_invest_acum"] * (df2["taxa_total_periodo"])
 print(df2)
 
