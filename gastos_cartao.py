@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-valor = os.getenv("VALOR")
 
 caminho = "./dados"
 gastos = f"{caminho}/Controle de Gastos.xlsx"
@@ -16,6 +15,26 @@ descontos = {
     '02-2026': 350,
     '05-2026': 1695,
 }
+
+salario_math = os.getenv("SALARIO_MATH")
+salario_gabis = os.getenv("SALARIO_GABIS")
+
+def parse_salario(valor_str):
+    """Converte uma string de salário no formato '1.234,56' para float."""
+    if valor_str is None:
+        return 0.0
+    valor_str = valor_str.replace('.', '').replace(',', '.')
+    return float(valor_str)
+
+def soma_salarios(s1, s2):
+    # Convertendo para float
+    salario_gabis = parse_salario(s2)
+    salario_math = parse_salario(s1)
+    # Somando os salários
+    salario_total = salario_math + salario_gabis
+    return salario_total
+salario_total = soma_salarios(salario_math, salario_gabis)
+
 
 def ler_arquivo_excel(file_path, sheet):
     try:
