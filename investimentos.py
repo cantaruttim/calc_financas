@@ -1,10 +1,27 @@
 import pandas as pd
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 caminho = "./dados"
 path_file = f"{caminho}/Controle de Gastos.xlsx"
 sheet = "Investimentos"
 taxa_selic = f"{caminho}/taxa_selic_apurada.csv"
+salario_math = os.getenv("SALARIO_MATH")
+salario_gabis = os.getenv("SALARIO_GABIS")
+
+def parse_salario(valor_str):
+    """Converte uma string de salário no formato '1.234,56' para float."""
+    if valor_str is None:
+        return 0.0
+    valor_str = valor_str.replace('.', '').replace(',', '.')
+    return float(valor_str)
+
+# Convertendo para float
+salario_gabis = parse_salario(os.getenv("SALARIO_GABIS"))
+salario_math = parse_salario(os.getenv("SALARIO_MATH"))
+# Somando os salários
+salario_total = salario_math + salario_gabis
 
 
 def ler_investimentos(path_file, sheet):
