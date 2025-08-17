@@ -17,12 +17,15 @@ def parse_salario(valor_str):
     valor_str = valor_str.replace('.', '').replace(',', '.')
     return float(valor_str)
 
-# Convertendo para float
-salario_gabis = parse_salario(os.getenv("SALARIO_GABIS"))
-salario_math = parse_salario(os.getenv("SALARIO_MATH"))
-# Somando os salários
-salario_total = salario_math + salario_gabis
-
+def soma_salarios(s1, s2):
+    # Convertendo para float
+    salario_gabis = parse_salario(os.getenv("SALARIO_GABIS"))
+    salario_math = parse_salario(os.getenv("SALARIO_MATH"))
+    # Somando os salários
+    salario_total = salario_math + salario_gabis
+    return salario_total
+salario_total = soma_salarios(salario_math, salario_gabis)
+print(salario_total)
 
 def ler_investimentos(path_file, sheet):
 
