@@ -171,5 +171,5 @@ def reordena_colunas(df2):
 
 df3 = preencher_valores_faltantes(df3)
 
-df3["Perc_Gastos"] = (salario_total / df3["Valor com desconto"]) * 100
+df3["Perc_Gastos"] = round((salario_total / df3["Valor com desconto"]) * 100, 2)
 print(df3)
