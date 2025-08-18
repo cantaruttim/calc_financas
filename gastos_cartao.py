@@ -39,14 +39,14 @@ salario_total = soma_salarios(salario_math, salario_gabis)
 def dizimo(salario_total):
     dizimo = salario_total * 0.1
     salario_total = salario_total - dizimo
+    return salario_total, dizimo
+salario_total, dizimo = dizimo(salario_total)
+print(f"salario após dízimo: R$ {salario_total:.2f}, sendo o dízimo de {dizimo:.2f}")
+
+def reserva(salario_total):
+    salario_total = salario_total * 0.1
     return salario_total
 
-# def reserva(salario_total):
-    # salario_total = salario_total * 0.1
-    # return salario_total
-
-salario_total = dizimo(salario_total)
-print(f"salario após dízimo: R$ {salario_total}")
 
 def ler_arquivo_excel(file_path, sheet):
     try:
