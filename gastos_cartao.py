@@ -47,7 +47,7 @@ receita_bolha, gastos_bolha, IR_math, IR_gabi = (
 )
 
 outras_receitas = {
-    '08-2025': receita_bolha, gastos_bolha, IR_math, IR_gabi 
+    '09-2025': [receita_bolha, gastos_bolha, IR_math, IR_gabi]
 }
 
 def soma_salarios(s1, s2):
