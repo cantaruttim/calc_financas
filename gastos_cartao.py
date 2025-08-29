@@ -35,19 +35,20 @@ def soma_outras_receitas(s1,s2,s3,s4):
     gastos_bolha = parse_salario(s2)
     IR_math = parse_salario(s3)
     IR_gabi = parse_salario(s4)
-    return receita_bolha, gastos_bolha, IR_math, IR_gabi
+    outras_receitas = receita_bolha +  gastos_bolha +  IR_math +  IR_gabi
+    return outras_receitas
 
-receita_bolha, gastos_bolha, IR_math, IR_gabi = (
+outras_receitas = (
     soma_outras_receitas(
-        receita_bolha, 
-        gastos_bolha, 
-        IR_math, 
+        receita_bolha,
+        gastos_bolha,
+        IR_math,
         IR_gabi
     )
 )
 
 outras_receitas = {
-    '09-2025': [receita_bolha, gastos_bolha, IR_math, IR_gabi]
+    '09-2025': [outras_receitas]
 }
 
 def soma_salarios(s1, s2):
