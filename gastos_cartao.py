@@ -16,6 +16,12 @@ descontos = {
     '05-2026': 1695,
 }
 
+receita_bolha = os.getenv("RECEITA_BOLHA")
+gastos_bolha = os.getenv("GASTOS_BOLHA")
+IR_math = os.getenv("IR_MATH")
+IR_gabi = os.getenv("IR_GABI")
+
+
 salario_math = os.getenv("SALARIO_MATH")
 salario_gabis = os.getenv("SALARIO_GABIS")
 
@@ -25,6 +31,26 @@ def parse_salario(valor_str):
         return 0.0
     valor_str = valor_str.replace('.', '').replace(',', '.')
     return float(valor_str)
+
+def soma_outras_receitas(s1,s2,s3,s4):
+    receita_bolha = parse_salario(s1)
+    gastos_bolha = parse_salario(s2)
+    IR_math = parse_salario(s3)
+    IR_gabi = parse_salario(s4)
+    return receita_bolha, gastos_bolha, IR_math, IR_gabi
+
+receita_bolha, gastos_bolha, IR_math, IR_gabi = (
+    soma_outras_receitas(
+        receita_bolha, 
+        gastos_bolha, 
+        IR_math, 
+        IR_gabi
+    )
+)
+
+outras_receitas = {
+    '08-2025': receita_bolha, gastos_bolha, IR_math, IR_gabi 
+}
 
 def soma_salarios(s1, s2):
     # Convertendo para float
