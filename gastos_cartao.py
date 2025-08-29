@@ -20,8 +20,6 @@ receita_bolha = os.getenv("RECEITA_BOLHA")
 gastos_bolha = os.getenv("GASTOS_BOLHA")
 IR_math = os.getenv("IR_MATH")
 IR_gabi = os.getenv("IR_GABI")
-
-
 salario_math = os.getenv("SALARIO_MATH")
 salario_gabis = os.getenv("SALARIO_GABIS")
 
