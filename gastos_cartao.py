@@ -55,10 +55,9 @@ receitas_extras = {
 receitas_extras = pd.DataFrame(receitas_extras)
 
 def soma_salarios(s1, s2):
-    # Convertendo para float
     salario_gabis = parse_salario(s2)
     salario_math = parse_salario(s1)
-    # Somando os salários
+    
     salario_total = salario_math + salario_gabis
     return salario_total
 salario_total = soma_salarios(salario_math, salario_gabis)
@@ -213,4 +212,11 @@ def outras_receitas(df3, receitas_extras):
     df3.fillna(0.0)
     return df3
 
-print(outras_receitas(df3, receitas_extras))
+df3 = outras_receitas(df3, receitas_extras)
+
+if (df3["Perc_Gastos"] < 0.0).any():
+    df3["sobra"] = (salario_total - df3["Valor com desconto"]) + df3["outras_receitas"]
+else:
+    df3["sobra"] = 0.0
+
+print(df3)
