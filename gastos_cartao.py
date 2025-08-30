@@ -35,10 +35,10 @@ def soma_outras_receitas(s1,s2,s3,s4):
     gastos_bolha = parse_salario(s2)
     IR_math = parse_salario(s3)
     IR_gabi = parse_salario(s4)
-    outras_receitas = receita_bolha +  gastos_bolha +  IR_math +  IR_gabi
+    outras_receitas = sum([receita_bolha, gastos_bolha, IR_math, IR_gabi])
     return outras_receitas
 
-outras_receitas = (
+receitas_extras = (
     soma_outras_receitas(
         receita_bolha,
         gastos_bolha,
@@ -47,9 +47,12 @@ outras_receitas = (
     )
 )
 
-outras_receitas = {
-    '09-2025': [outras_receitas]
+receitas_extras = {
+    'Vigência': ['2025-09'],
+    'outras_receitas': [receitas_extras] 
 }
+
+receitas_extras = pd.DataFrame(receitas_extras)
 
 def soma_salarios(s1, s2):
     # Convertendo para float
@@ -202,5 +205,12 @@ def perc_gastos(salario_total):
     df3.sort_values("Vigência", ascending=True)
     return df3
 
+
 df3 = perc_gastos(salario_total)
-print(df3)
+
+def outras_receitas(df3, receitas_extras):
+    df3 = df3.merge(receitas_extras, on='Vigência', how='left')
+    df3.fillna(0.0)
+    return df3
+
+print(outras_receitas(df3, receitas_extras))
